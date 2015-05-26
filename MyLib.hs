@@ -1,28 +1,30 @@
-module MyLib 
+module MyLib
 ( aksTest
 , deleteMultiples
 , even'
 , fastExp
 , fibonacci
 , intLog2
+, nonprimes
 , perfectPowerTest
+, primes
 , sieveOfEratosthenes
 , sqrt'
 ) where
 
 import Data.Bits
 
--- deterministic test for primiality in O()
+-- deterministic primality test
 aksTest :: Integer -> Bool
 aksTest n
-  | perfectPowerTest n /= (-1,-1) = False
-  | otherwise = aksTestAux n r l 1
-  where r = aksFindR
-        l = undefined
+  | n < 2     = False  -- need to be excluded because of findR
+  | otherwise = and [mod s n == 0 | s <- tail $ halfExpand n]
 
-aksTestAux = undefined
+-- returns the first half (if length is odd including mid) of the coefficients 
+-- of the polynomial (x+1)^n  as second is identical
+halfExpand :: Integer -> [Integer]
+halfExpand n = scanl (\z i -> div (z * (n-i+1)) i) 1 [1..(div n 2)]
 
-aksFindR = undefined
 -- deletes all multiples of n from a given list
 deleteMultiples ::  (Integral a) => a -> [a] -> [a]
 deleteMultiples n list = [x | x <- list, (mod x n) /= 0]
@@ -60,7 +62,7 @@ perfectPowerTest n = perfectPowerTestAux n 2 (floor $ logBase 2 (fromInteger n))
 
 perfectPowerTestAux :: Integer -> Integer -> Integer -> Integer -> Integer -> (Integer,Integer)
 perfectPowerTestAux n e maxE m1 m2
-  | e > maxE    = (-1,-1)   -- not a perfect power
+  | e > maxE    = (-1,-1)
   | m1 > m2     = perfectPowerTestAux n (e+1) maxE 2 n
   | mToE == n   = (m,e)
   | mToE >  n   = perfectPowerTestAux n e maxE m1 (m-1)
@@ -69,16 +71,47 @@ perfectPowerTestAux n e maxE m1 m2
         mToE = fastExp m e
 
 -- returns all prime numbers between 2 and n
-sieveOfEratosthenes :: (Integral a) => a -> [a]
-sieveOfEratosthenes n = sieveOfEratosthenesAux (sqrt' n) [2..n] []
+sieveOfEratosthenes :: Integer -> [Integer]
+sieveOfEratosthenes n = takeWhile (\a -> a <= n) primes
 
-sieveOfEratosthenesAux :: (Integral a) => a -> [a] -> [a] -> [a]
-sieveOfEratosthenesAux endN list primes
-  | head list > endN = primes ++ list
-  | otherwise = sieveOfEratosthenesAux endN (deleteMultiples (head list) list) (head list : primes)
+----- helper functions for sieveoferatosthenes --
+
+-- expects two sorted infinite lists 
+-- returns a sorted merged infinite list
+merge :: (Ord a) => [a] -> [a] -> [a]
+merge xs@(x:xt) ys@(y:yt) =
+  case compare x y of
+    LT -> x : (merge xt ys)
+    EQ -> x : (merge xt yt)
+    GT -> y : (merge xs yt)
+
+-- expects two sorted infinite lists
+-- returns the first list without all elements of the second list
+diff :: (Ord a) => [a] -> [a] -> [a]
+diff xs@(x:xt) ys@(y:yt) =
+  case compare x y of
+    LT -> x : (diff xt ys)
+    EQ -> diff xt yt
+    GT -> diff xs yt
+
+-- calculates an infinite list of all odd nonprimes > 9
+nonprimes :: [Integer]
+nonprimes = foldr1 f $ map g $ tail primes
+  where
+    f (x:xt) ys = x : (merge xt ys)
+    g p         = [ n * p | n <- [p, p + 2 ..]]
+
+-- calculates an infinite list of primes
+primes :: [Integer]
+primes    = [2, 3, 5] ++ (diff [7, 9 ..] nonprimes)
+
+-- to take the first n primes use:
+-- take n primes
+-- to take all primes < n use:
+-- takeWhile (\a -> a<n) primes
+
+----- end of helper functions -------------------
 
 -- square root for integrals
 sqrt' :: (Integral a) => a -> a
 sqrt' n = floor (sqrt ( fromIntegral n))
-
-

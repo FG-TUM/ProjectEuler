@@ -48,7 +48,7 @@ bool millerRabin(num n, num witness) {
 
 num rotateNumRight(num n) {
 
-    int length = (int) ceil(log10(n));
+    int length = (int) floor(log10(n)) + 1;
 
     num lastDigit = n % 10;
     num res       = (lastDigit * (num) pow(10, length - 1)) + n / 10;

@@ -14,11 +14,19 @@
 --e.g. |11| = 11 and |−4| = 4
 --Find the product of the coefficients, a and b, for the quadratic expression that produces the maximum number of primes for consecutive values of n, starting with n = 0.
 
-checkCoefficients Int -> Int -> Int
-checkCoefficients a b = checkCoefficientsAux a b 0 0
+import MyLib
+import Data.List
 
-checkCoefficientsAux Int -> Int -> Int -> Int -> Int
-checkCoefficientsAux a b n solutions
-  | aksTest (n*n + a*n + n) == true = checkCoefficientsAux a b (n+1) (solutions +1)
-  | otherwise = solutions
+toupleMax (a1, a2, a3) (b1, b2, b3)
+  | a3 >= b3 = (a1, a2, a3)
+  | otherwise = (b1, b2, b3)
 
+listForB = sort $ sieveOfEratosthenes 1000
+listForA = [-999, -997..1000]
+
+primeList a b = takeWhile aksTest [n*n + a * n + b | n <-[0..]]
+
+problem = foldl toupleMax (0,0,0) [(a, b, length $ primeList a b) | a <- listForA, b <- listForB]
+
+main :: IO()
+main = print $ problem

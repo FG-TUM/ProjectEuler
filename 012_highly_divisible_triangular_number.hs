@@ -30,7 +30,7 @@ triangleNumber' i = sum [1..i]
 -- optimized version using gaussian summation formula
 triangleNumber :: (Integral a) => a -> a
 triangleNumber i = div ((i+1) * i) 2
-
+  
 -- returns a list of all triangle Numbers from the given index intervall
 triangleNumberList :: (Integral a) => a -> a -> [a]
 triangleNumberList i j = map triangleNumber [i..j]

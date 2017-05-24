@@ -20,97 +20,31 @@
 -- if n is abundant n*k is also abundant
 -- the greatest number thats a sum of 2 abundant numbers is 20161
 
-import Data.Bits
+import MyLib
 import Data.List
-  
+import Data.Set
+
+sumOfDivisors :: Int -> Int
+sumOfDivisors n = product [(p^(a+1) -1) `div` (p-1) | p<-sieveOfEratosthenes n, n `mod` p == 0,  a<-[maximum $ takeWhile (\x -> n `mod` p^x == 0) [1..]]] - n
+
+sumOfDivisors' :: Int -> Int
+sumOfDivisors' n = sum $ listDivisors n
+
+listDivisors:: Int -> [Int]
+listDivisors n = [x | x<-[1..(n `div` 2)], n `mod` x == 0]
+
+listAbundandNumbers :: Int -> [Int]
+listAbundandNumbers n = [x | x<-[12..n], sumOfDivisors' x > x]
+
+listOfSums :: Int -> [Int]
+listOfSums n = toList $ fromList $ listOfSumsAux (listAbundandNumbers n) []
+
+listOfSumsAux :: [Int] -> [Int] -> [Int]
+listOfSumsAux list res
+  | list == [] = res
+  | otherwise  = listOfSumsAux (tail list) ([head list + x | x <- list] ++ res)
+
 main :: IO()
--- main = print $ sum $ crossOutSums [1..20161] (listAbundandNumbers' 20161)
-main = print $ length $ crossOutSums [1..1000] (listAbundandNumbers' 1000)
--- main = print $ listAbundandNumbers' 1000
--- main = print $ sum $ listAbundandNumbers' 20161
-
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
--- TEST START
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-
--- returns a list of all numbers from list 1 that are not sums of numbers from list 2
-crossOutSums :: (Integral a) => [a] -> [a] -> [a]
-crossOutSums list summands = crossOutSumsAux list summands 0
-
-crossOutSumsAux :: (Integral a) => [a] -> [a] -> Int -> [a]
-crossOutSumsAux list summands i
-  | i >= (length summands -1) = list
-  | otherwise = crossOutSumsAux (list \\ sumList) summands (i+1)
-  where s = summands !! i
-        sumList = map (\x -> x + s) summands
-
--- crossOutSumsAux :: (Integral a) => [a] -> [a] -> Int -> [a]
--- crossOutSumsAux list summands i
---   | i >= (length summands -1) = list
---   | otherwise = crossOutSumsAux (list \\ sumList) summands (i+1)
---   where s = summands !! i
---         sumList = map (\x -> x + s) summands
-        
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
--- TEST END
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-
-
--- [Optimized] lists all abundant number between 1 and n (works only safe for n < 2.14 Bil)
-listAbundandNumbers' :: Int -> [Int]
-listAbundandNumbers' n = [ x | x <- [12..n], (even' x || mod x 3 == 0),  isAbundandNumber x]
-
--- returns true if n is less than the sum of its proper divisors
-isAbundandNumber :: (Integral a) => a -> Bool
-isAbundandNumber n = sumProperDivisors n > n
-
--- returns sum of proper divisors of n 
-sumProperDivisors :: (Integral a) => a -> a
-sumProperDivisors 1 = 1
-sumProperDivisors n = sum $ listProperDivisors n
-
--- lists all proper Divisors of n
-listProperDivisors :: (Integral a) => a -> [a]
-listProperDivisors 1 = [1]
-listProperDivisors n = 1 : (filter (\x -> x /= n) $ delDuplicates $ map product (subsets $ primefactors n))
-
--- deletes all multiple instances in a list
-delDuplicates :: (Integral a) => [a] -> [a]
-delDuplicates l = delDuplicatesAux l []
-
-delDuplicatesAux :: (Integral a) => [a] -> [a] -> [a]
-delDuplicatesAux l retL
-  | l == [] = retL
-  | elem headL retL = delDuplicatesAux tailL retL
-  | otherwise = delDuplicatesAux tailL (headL : retL)
-  where tailL = tail l
-        headL = head l
-        
--- lists all prime factors of n
-primefactors :: (Integral a) => a -> [a]
-primefactors n = primefactorsAux n 2 []
-
-primefactorsAux :: (Integral a) => a -> a -> [a] -> [a]
-primefactorsAux n divisor factors
-  | n == 1 = factors
-  | (mod n divisor) == 0 = primefactorsAux (div n divisor) (divisor) (divisor:factors)
-  | otherwise = primefactorsAux n (divisor+1) factors
-
-
--- returns a list of all subsets of a given list represented as lists
-subsets :: (Integral a) => [a] -> [[a]]
-subsets list
-  | length list == 1 = [list]
-  | otherwise = nextSubsets ++ ( concatAll nextSubsets (head list) ) ++ [[head list]]
-  where nextSubsets = subsets (tail list)
-
--- takes a list of list and concatinates an given n to each list
-concatAll :: (Integral a) => [[a]] -> a -> [[a]]
-concatAll list n = [ n : x | x <- list]
-
--- optimized even
-even' :: Int -> Bool
-even' n
-  | n .&. 1 == 0 = True
-  | otherwise = False
-  
+{-main = print $ length $ listOfSums 20161-}
+main = print $ sum [x | x<-[1..20161], (x `elem` l) == False]
+  where l = listOfSums 20161

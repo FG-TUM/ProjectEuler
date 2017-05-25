@@ -64,6 +64,6 @@ num rotateNumRight(num n) {
     return res;
 }
 
-int numLength(num n) {
-    return (int)floor(log10(n)) + 1;
+unsigned int numLength(num n) {
+    return (unsigned int)floor(log10(n)) + 1;
 }

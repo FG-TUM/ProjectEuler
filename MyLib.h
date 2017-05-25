@@ -47,6 +47,6 @@ num rotateNumRight(num n);
  * @param n
  * @return length of n
  */
-int numLength(num n);
+unsigned int numLength(num n);
 
 #endif //PROJECTEULER_MYLIB_H

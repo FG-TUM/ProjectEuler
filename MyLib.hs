@@ -7,6 +7,7 @@ module MyLib
 , fastExp
 , fibonacci
 , mostCommon
+, numLength
 , intLog2
 , perfectPowerTest
 , rotate'
@@ -72,6 +73,10 @@ intLog2 n = floor $ logBase 2 (fromInteger n)
 mostCommon :: Ord c => [c] -> c
 mostCommon list = fst . maximumBy (compare `on` snd) $ elemCount
       where elemCount = map (head &&& length) . group . sort $ list
+
+--returns the length of an integer
+numLength :: (Show a) => a -> Int
+numLength n = length $ show n
 
 -- if n is a perfect power the fuction returns m^e = n else (-1,-1)
 perfectPowerTest :: Integer -> (Integer,Integer)

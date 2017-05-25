@@ -6,6 +6,7 @@ module MyLib
 , fac
 , fastExp
 , fibonacci
+, mostCommon
 , intLog2
 , perfectPowerTest
 , rotate'
@@ -14,6 +15,9 @@ module MyLib
 ) where
 
 import Data.Bits
+import Control.Arrow
+import Data.List
+import Data.Function
 
 -- quick deterministic test for primiality
 aksTest :: Integer -> Bool
@@ -62,6 +66,12 @@ fibonacci n = fibonacci (n-1) + fibonacci (n-2)
 
 intLog2 :: Integer -> Integer
 intLog2 n = floor $ logBase 2 (fromInteger n)
+
+-- returns the most common element in a list
+-- (head &&& length) == (\ a -> (head a, length a))
+mostCommon :: Ord c => [c] -> c
+mostCommon list = fst . maximumBy (compare `on` snd) $ elemCount
+      where elemCount = map (head &&& length) . group . sort $ list
 
 -- if n is a perfect power the fuction returns m^e = n else (-1,-1)
 perfectPowerTest :: Integer -> (Integer,Integer)

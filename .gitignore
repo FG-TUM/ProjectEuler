@@ -16,3 +16,5 @@ cabal.sandbox.config
 *.hp
 cmake-build-debug/
 .idea/
+cmake-build-release/
+

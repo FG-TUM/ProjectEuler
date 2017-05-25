@@ -1,3 +1,4 @@
+#include <iostream>
 #include "MyLib.h"
 
 
@@ -14,6 +15,13 @@ static num pow_mod(num a, num x, num n) {
     return r;
 }
 
+bool millerRabin(num n, std::vector<num> witness){
+    for (int i = 0; i < witness.size(); ++i) {
+        if(not millerRabin(n, witness[i]))
+            return false;
+    }
+    return true;
+}
 
 bool millerRabin(num n, num witness) {
     if (n == 2 || n == 3)
@@ -54,4 +62,8 @@ num rotateNumRight(num n) {
     num res       = (lastDigit * (num) pow(10, length - 1)) + n / 10;
 
     return res;
+}
+
+int numLength(num n) {
+    return (int)floor(log10(n)) + 1;
 }

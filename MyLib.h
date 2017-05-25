@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <stdint.h>
+#include <vector>
 
 typedef int64_t num;
 
@@ -16,11 +17,23 @@ typedef int64_t num;
 static num pow_mod(num a, num x, num n);
 
 /**
- * The Miller-Rabin probabilistic primality test.
+ * The Miller-Rabin primality test.
  * Returns true if ``n´´ is PROBABLY prime, false if it's composite.
- * The parameter ``k´´ is the accuracy.
+ * @param n Number to test.
+ * @param witness
+ * @return true if n is probably a prime false if it is definitely no prime.
  */
 bool millerRabin(num n, num witness);
+
+/**
+ * The Miller-Rabin primality test.
+ * Returns true if ``n´´ is PROBABLY prime, false if it's composite.
+ * @param n Number to test.
+ * @param witness vector of witnesses to test.
+ * @return true if n is probably a prime false if it is definitely no prime.
+ */
+bool millerRabin(num n, std::vector<num> witness);
+
 
 /**
  * Rotates a given number digit wise to the right by one
@@ -28,5 +41,12 @@ bool millerRabin(num n, num witness);
  * @return rotated number
  */
 num rotateNumRight(num n);
+
+/**
+ * Calculates the length of a given number
+ * @param n
+ * @return length of n
+ */
+int numLength(num n);
 
 #endif //PROJECTEULER_MYLIB_H

@@ -15,7 +15,7 @@
  */
 #include <set>
 #include <iostream>
-#include "MyLib.h"
+#include "MyLib_cpp.h"
 
 using namespace std;
 

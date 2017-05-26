@@ -6,6 +6,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g")
 
-add_executable(Problem_035 035_circular_primes.cpp MyLib.cpp)
-add_executable(Problem_037 037_trunkable_primes.cpp MyLib.cpp)
-add_executable(Problem_038 038_pandigital_multiples.cpp MyLib.cpp)
+add_executable(Problem_035 035_circular_primes.cpp MyLib_cpp.cpp)
+add_executable(Problem_037 037_trunkable_primes.cpp MyLib_cpp.cpp)
+add_executable(Problem_038 038_pandigital_multiples.cpp MyLib_cpp.cpp)
+add_executable(Problem_041 041_pandigital_prime.cpp MyLib_cpp.cpp)

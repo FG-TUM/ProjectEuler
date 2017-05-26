@@ -20,7 +20,7 @@
 -- if n is abundant n*k is also abundant
 -- the greatest number thats a sum of 2 abundant numbers is 20161
 
-import MyLib
+import MyLib_haskell
 import Data.List
 import Data.Set
 

@@ -4,7 +4,7 @@
 
 --NOTE: The first two lines in the file represent the numbers in the example given above.
 
-import MyLib
+import MyLib_haskell
 
 fastExpTouple ::(Integer, Integer) -> Integer
 fastExpTouple (a,n) = fastExp a n

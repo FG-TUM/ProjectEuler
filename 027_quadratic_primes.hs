@@ -14,7 +14,7 @@
 --e.g. |11| = 11 and |−4| = 4
 --Find the product of the coefficients, a and b, for the quadratic expression that produces the maximum number of primes for consecutive values of n, starting with n = 0.
 
-import MyLib
+import MyLib_haskell
 import Data.List
 
 toupleMax (a1, a2, a3) (b1, b2, b3)

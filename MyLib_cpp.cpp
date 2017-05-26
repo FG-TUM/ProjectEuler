@@ -1,5 +1,5 @@
 #include <iostream>
-#include "MyLib.h"
+#include "MyLib_cpp.h"
 
 
 static num pow_mod(num a, num x, num n) {

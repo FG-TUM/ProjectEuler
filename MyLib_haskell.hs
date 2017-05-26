@@ -1,4 +1,4 @@
-module MyLib 
+module MyLib_haskell 
 ( aksTest
 , choose'
 , deleteMultiples

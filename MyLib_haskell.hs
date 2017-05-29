@@ -10,6 +10,10 @@ module MyLib_haskell
 , mostCommon
 , numLength
 , intLog2
+, isHexagonNum
+, isInt
+, isPentagonNum
+, isTriangleNum
 , perfectPowerTest
 , rotate'
 , sieveOfEratosthenes
@@ -69,6 +73,18 @@ fibonacci n = fibonacci (n-1) + fibonacci (n-2)
 
 intLog2 :: Integer -> Integer
 intLog2 n = floor $ logBase 2 (fromInteger n)
+
+isHexagonNum :: Int -> Bool
+isHexagonNum n = isInt $ (sqrt (1 + 8 * fromIntegral n) + 1) / 4
+
+isInt :: RealFrac a => a -> Bool
+isInt x = x == fromInteger (round x)
+
+isPentagonNum :: Int -> Bool
+isPentagonNum n = isInt $ (sqrt (1 + 24 * fromIntegral n) + 1) / 6
+
+isTriangleNum :: Int -> Bool
+isTriangleNum n = isInt $ sqrt (0.25 + 2 * fromIntegral n) - 0.5
 
 -- millerRabin test for primiality for a given list of witnesses
 millerRabin :: [Integer] -> Integer ->Bool

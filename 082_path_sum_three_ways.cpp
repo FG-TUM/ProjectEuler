@@ -1,6 +1,7 @@
 /*
- * In the 5 by 5 matrix below, the minimal path sum from the top left to the bottom right,
- * by only moving to the right and down, is indicated in bold red and is equal to 2427.
+ * The minimal path sum in the 5 by 5 matrix below, by starting in any cell in the left column
+ * and finishing in any cell in the right column, and only moving up, down, and right,
+ * is indicated in red and bold; the sum is equal to 994.
  *
  *  131 673 234 103  18
  *  201  96 342 965 150
@@ -9,13 +10,13 @@
  *  805 732 524  37 331
  *
  *   Find the minimal path sum, in matrix.txt (right click and "Save Link/Target As..."),
- *   a 31K text file containing a 80 by 80 matrix, from the top left to the bottom right
- *   by only moving right and down.
+ *   a 31K text file containing a 80 by 80 matrix, from the left column to the right column.
  */
 
 #include <cstdio>
 #include <map>
 #include <list>
+#include <algorithm>
 #include <functional>
 #include <fstream>
 #include <sstream>
@@ -58,10 +59,14 @@ void printDirectionField(const node maze[], const unsigned int x, const unsigned
             printf("\n");
         if (maze[i].optimalPredecessor == nullptr)
             printf(" ");
+        else if (maze[i].optimalPredecessor == &maze[i + 1])
+            printf("→");
         else if (maze[i].optimalPredecessor == &maze[i - 1])
-            printf("<");
+            printf("←");
+        else if (maze[i].optimalPredecessor == &maze[i + x])
+            printf("↓");
         else
-            printf("^");
+            printf("↑");
         printf("%3d ", maze[i].value);
     }
     printf("\n\n");
@@ -73,8 +78,7 @@ void expand(list <node> &openList, node &currentNode, node &nextNode, const int 
         return;
 
     // potential costs to nextNode
-    auto valToNext        = currentNode.valueToHere + nextNode.value;
-    auto maybeValToTarget = currentNode.valueToHere + distanceToTarget(nextNode, x, y);
+    auto valToNext = currentNode.valueToHere + nextNode.value;
 
     // do nothing if there already exists a better path
     if (((nextNode.visited & OPEN) == OPEN) and valToNext >= nextNode.valueToHere)
@@ -100,26 +104,34 @@ unsigned int a_star(node maze[], unsigned int n, unsigned int m) {
     // list of nodes to which a (suboptimal) path is known
     list <node> openList;
 
-    openList.push_back(maze[0]);
+    for (int i = 0; i < n; ++i) {
+        openList.push_back(maze[i * n]);
+        maze[i * n].visited |= OPEN;
+    }
+    openList.sort(compareByValueToHere);
 
     while (!openList.empty()) {
         node currentNode = openList.front();
         openList.pop_front();
-        // have we reached the target?
-        if (currentNode.index == n * m - 1)
-            return currentNode.valueToHere;
-
 
         // mark node as visited
         currentNode.visited |= CLOSED;
 
-        // only expand right if not last in row
+        // expand right
         if ((currentNode.index + 1) % n != 0 || currentNode.index == 0) {
             expand(openList, maze[currentNode.index], maze[currentNode.index + 1], n, m);
+        } else {
+            return currentNode.valueToHere;
         }
+
         // only expand down if not last in column
         if (currentNode.index < n * (m - 1) || currentNode.index == 0) {
             expand(openList, maze[currentNode.index], maze[currentNode.index + n], n, m);
+        }
+
+        // only expand up if not in first line
+        if (currentNode.index >= n) {
+            expand(openList, maze[currentNode.index], maze[currentNode.index - n], n, m);
         }
         auto comp = bind(&compareByDistanceToTarget, placeholders::_1, placeholders::_2, n, m);
         openList.sort(compareByValueToHere);
@@ -137,7 +149,8 @@ void printPath(node maze[], int x, int y) {
 int main() {
 
     vector<unsigned int> values;
-    ifstream             matrixFile("../resources/p081_matrix.txt");
+    unsigned int         pathLengths = -1;
+    ifstream             matrixFile("../resources/p082_matrix.txt");
     if (!matrixFile.is_open()) {
         printf("could not open file!");
         return -1;
@@ -151,20 +164,26 @@ int main() {
             values.push_back(stoi(token));
         }
     }
-    unsigned int n      = sqrt(values.size());
-
+    unsigned int n                   = sqrt(values.size());
 
     node              maze[values.size()];
-    for (unsigned int i = 0; i < values.size(); ++i) {
-        maze[i].value       = values[i];
-        maze[i].valueToHere = values[i];
-        maze[i].index       = i;
+    for (unsigned int i              = 0; i < n; ++i) {
+        auto              start = i * n;
+        for (unsigned int j     = 0; j < n; ++j) {
+            for (unsigned int k      = 0; k < values.size(); ++k) {
+                maze[k].value              = values[k];
+                maze[k].valueToHere        = values[k];
+                maze[k].index              = k;
+                maze[k].optimalPredecessor = nullptr;
+                maze[k].visited            = 0;
+            }
+            auto              target = (j + 1) * n - 1;
+            pathLengths = min(pathLengths, a_star(maze, n, n));
+        }
     }
 
-    auto pathLength = a_star(maze, n, n);
+//    printDirectionField(maze, n, n);
 
-    printDirectionField(maze, n, n);
-
-    printf("Path length = %d\n", pathLength);
-    printPath(maze, n, n);
+    printf("Path length = %d\n", pathLengths);
+//    printPath(maze, n, n);
 }

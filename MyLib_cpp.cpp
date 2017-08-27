@@ -14,9 +14,9 @@ static num pow_mod(num a, num x, num n) {
     return r;
 }
 
-bool millerRabin(num n, std::vector<num> witness){
+bool millerRabin(num n, std::vector<num> witness) {
     for (int i = 0; i < witness.size(); ++i) {
-        if(not millerRabin(n, witness[i]))
+        if (not millerRabin(n, witness[i]))
             return false;
     }
     return true;
@@ -64,7 +64,7 @@ num rotateNumRight(num n) {
 }
 
 unsigned int numLength(num n) {
-    return (unsigned int)floor(log10(n)) + 1;
+    return (unsigned int) floor(log10(n)) + 1;
 }
 
 num gcd(num u, num v) {
@@ -72,14 +72,27 @@ num gcd(num u, num v) {
     u >>= __builtin_ctz(u);
     do {
         v >>= __builtin_ctz(v);
-        if(u > v)
+        if (u > v)
             std::swap(u, v);
-    } while((v -= u));
+    } while ((v -= u));
     return u << shift;
 }
 
 bool areComprimes(num a, num b) {
-    if(!((a | b) & 1))
+    if (!((a | b) & 1))
         return false; // Both are even numbers, divisible by at least 2.
     return 1 == gcd(a, b);
+}
+
+std::vector<int> intToVec(int n) {
+    std::vector<int> retVec;
+    auto lenN = numLength(n);
+    retVec.reserve(lenN);
+
+    for (int i = 0; i < lenN; ++i) {
+        retVec.push_back(n % 10);
+        n /= 10;
+    }
+
+    return retVec;
 }

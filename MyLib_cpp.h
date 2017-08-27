@@ -55,5 +55,19 @@ unsigned int numLength(num n);
  */
 num gcd(num u, num v);
 
+/**
+ * Decides whether a and b are co prime (no common divisor)
+ * @param a
+ * @param b
+ * @return true iff a and b are co prime
+ */
 bool areComprimes(num a, num b);
+
+/**
+ * Returns the list of digits of n. Duplicates are not eliminated and digits are in reverse order of occurrence.
+ * @param n
+ * @return vector containing all digits of n.
+ */
+std::vector<int> intToVec(int n);
+
 #endif //PROJECTEULER_MYLIB_H

@@ -1,6 +1,7 @@
 #ifndef PROJECTEULER_MYLIB_H
 #define PROJECTEULER_MYLIB_H
 
+#include <utility>
 #include <cmath>
 #include <stdint.h>
 #include <vector>
@@ -49,4 +50,10 @@ num rotateNumRight(num n);
  */
 unsigned int numLength(num n);
 
+/**
+ * Calculates the grates common divisor
+ */
+num gcd(num u, num v);
+
+bool areComprimes(num a, num b);
 #endif //PROJECTEULER_MYLIB_H

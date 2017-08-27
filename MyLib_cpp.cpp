@@ -1,4 +1,3 @@
-#include <iostream>
 #include "MyLib_cpp.h"
 
 
@@ -66,4 +65,21 @@ num rotateNumRight(num n) {
 
 unsigned int numLength(num n) {
     return (unsigned int)floor(log10(n)) + 1;
+}
+
+num gcd(num u, num v) {
+    auto shift = __builtin_ctz(u | v);
+    u >>= __builtin_ctz(u);
+    do {
+        v >>= __builtin_ctz(v);
+        if(u > v)
+            std::swap(u, v);
+    } while((v -= u));
+    return u << shift;
+}
+
+bool areComprimes(num a, num b) {
+    if(!((a | b) & 1))
+        return false; // Both are even numbers, divisible by at least 2.
+    return 1 == gcd(a, b);
 }

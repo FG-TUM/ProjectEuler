@@ -12,9 +12,11 @@ module MyLib_haskell
 , intLog2
 , isHexagonNum
 , isInt
+, isPalindrome
 , isPentagonNum
 , isTriangleNum
 , perfectPowerTest
+, reverseInt
 , rotate'
 , sieveOfEratosthenes
 , sqrt'
@@ -39,7 +41,7 @@ choose' n k = foldl (\z i -> (z * (n-i+1)) `div` i) 1 [1..k]
 
 -- deletes all multiples of n from a given list
 deleteMultiples ::  (Integral a) => a -> [a] -> [a]
-deleteMultiples n list = [x | x <- list, (mod x n) /= 0]
+deleteMultiples n list = [x | x <- list, mod x n /= 0]
 
 -- optimized even for Int
 even' :: Int -> Bool
@@ -80,6 +82,9 @@ isHexagonNum n = isInt $ (sqrt (1 + 8 * fromIntegral n) + 1) / 4
 isInt :: RealFrac a => a -> Bool
 isInt x = x == fromInteger (round x)
 
+isPalindrome :: Integer -> Bool
+isPalindrome n = n == reverseInt n
+
 isPentagonNum :: Int -> Bool
 isPentagonNum n = isInt $ (sqrt (1 + 24 * fromIntegral n) + 1) / 6
 
@@ -104,7 +109,7 @@ millerRabinPrimality n a
         (k,m) = find2km n'
         -- (eq. to) find2km (2^k * n) = (k,n)
         find2km :: Integral a => a -> (a,a)
-        find2km n = f 0 n
+        find2km = f 0
             where
                 f k m
                     | r == 1 = (k,m)
@@ -162,13 +167,18 @@ perfectPowerTestAux n e maxE m1 m2
   where m = div (m1 + m2) 2 -- div truncates towards neg inf
         mToE = fastExp m e
 
+reverseInt :: Integer -> Integer
+reverseInt = aux 0
+  where aux rev 0 = rev
+        aux rev n = let(q,r) = n `quotRem` 10 in aux (rev * 10 + r) q
+
 -- rotate a list to the left
 rotate' :: Int -> [a] -> [a]
 rotate' n list
   | n == 0    = list
   | null list = []
   | n == 1    = tail list ++ [head list]
-  | otherwise = drop n' list ++ (take n' list)
+  | otherwise = drop n' list ++ take n' list
   where n' = n `mod` length list
 
 -- returns all prime numbers between 2 and n

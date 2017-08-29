@@ -2,6 +2,7 @@ module MyLib_haskell
 ( aksTest
 , choose'
 , deleteMultiples
+, digitSum
 , even'
 , fac
 , fastExp
@@ -22,10 +23,11 @@ module MyLib_haskell
 , sqrt'
 ) where
 
-import Data.Bits
 import Control.Arrow
-import Data.List
+import Data.Bits
+import Data.Char
 import Data.Function
+import Data.List
 
 -- quick deterministic test for primiality
 aksTest :: Integer -> Bool
@@ -42,6 +44,9 @@ choose' n k = foldl (\z i -> (z * (n-i+1)) `div` i) 1 [1..k]
 -- deletes all multiples of n from a given list
 deleteMultiples ::  (Integral a) => a -> [a] -> [a]
 deleteMultiples n list = [x | x <- list, mod x n /= 0]
+
+digitSum :: (Integral a, Show a) => a -> Int
+digitSum n = sum . map digitToInt . show $ n
 
 -- optimized even for Int
 even' :: Int -> Bool

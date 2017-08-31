@@ -1,17 +1,51 @@
 #include "MyLib_cpp.h"
 
+bool areComprimes(num a, num b) {
+    if (!((a | b) & 1))
+        return false; // Both are even numbers, divisible by at least 2.
+    return 1 == gcd(a, b);
+}
 
-static num pow_mod(num a, num x, num n) {
-    num r = 1;
+num gcd(num u, num v) {
+    auto shift = __builtin_ctz(u | v);
+    u >>= __builtin_ctz(u);
+    do {
+        v >>= __builtin_ctz(v);
+        if (u > v)
+            std::swap(u, v);
+    } while ((v -= u));
+    return u << shift;
+}
 
-    while (x) {
-        if ((x & 1) == 1)
-            r = a * r % n;
+std::vector<int> intToVec(int n) {
+    std::vector<int> retVec;
+    auto             lenN = numLength(n);
+    retVec.reserve(lenN);
 
-        x >>= 1;
-        a     = a * a % n;
+    for (int i = 0; i < lenN; ++i) {
+        retVec.push_back(n % 10);
+        n /= 10;
     }
-    return r;
+
+    return retVec;
+}
+
+bool millerRabin(num n) {
+    std::vector<num> w;
+    if (n < 2047)
+        return millerRabin(n, 2);
+    else if (n < 9080191)
+        w = {31, 73};
+    else if (n < 4759123141L)
+        w = {2, 7, 61};
+    else if (n < 1122004669633L)
+        w = {2, 13, 23, 1662803};
+    else {
+        std::cout << "Miller Rabin Test: Number too large for predefined witnesses!" << std::endl;
+        return false;
+    }
+
+    return millerRabin(n, w);
 }
 
 bool millerRabin(num n, std::vector<num> witness) {
@@ -37,13 +71,13 @@ bool millerRabin(num n, num witness) {
 
     num m = (n - 1) / (1 << k);
 
-    num x = pow_mod(witness, m, n);
+    num x = powMod(witness, m, n);
 
     if (x == 1 || x == n - 1)
         return true;
 
     for (int r = 1; r <= k - 1; ++r) {
-        x = pow_mod(x, 2, n);
+        x = powMod(x, 2, n);
         if (x == 1)
             return false;
         if (x == n - 1)
@@ -51,6 +85,23 @@ bool millerRabin(num n, num witness) {
     }
 
     return false;
+}
+
+unsigned int numLength(num n) {
+    return (unsigned int) floor(log10(n)) + 1;
+}
+
+static num powMod(num a, num x, num n) {
+    num r = 1;
+
+    while (x) {
+        if ((x & 1) == 1)
+            r = a * r % n;
+
+        x >>= 1;
+        a     = a * a % n;
+    }
+    return r;
 }
 
 num rotateNumRight(num n) {
@@ -63,36 +114,29 @@ num rotateNumRight(num n) {
     return res;
 }
 
-unsigned int numLength(num n) {
-    return (unsigned int) floor(log10(n)) + 1;
-}
+std::vector<unsigned int> sieveOfEratosthenes(unsigned int n) {
 
-num gcd(num u, num v) {
-    auto shift = __builtin_ctz(u | v);
-    u >>= __builtin_ctz(u);
-    do {
-        v >>= __builtin_ctz(v);
-        if (u > v)
-            std::swap(u, v);
-    } while ((v -= u));
-    return u << shift;
-}
+    std::vector<bool>         *isPrime = new std::vector<bool>(n, true);
+    std::vector<unsigned int> primes;
 
-bool areComprimes(num a, num b) {
-    if (!((a | b) & 1))
-        return false; // Both are even numbers, divisible by at least 2.
-    return 1 == gcd(a, b);
-}
+    // Legendre approximation
+    primes.reserve(n / (log(n) - 1.08366));
 
-std::vector<int> intToVec(int n) {
-    std::vector<int> retVec;
-    auto lenN = numLength(n);
-    retVec.reserve(lenN);
+    // algorithm starts at 5 so add primes before
+    primes.push_back(2);
+    primes.push_back(3);
 
-    for (int i = 0; i < lenN; ++i) {
-        retVec.push_back(n % 10);
-        n /= 10;
+    // alternate step size between 2 and 4 to avoid stepping on multiples of 2 and 3
+    for (unsigned long i = 5, step = 2; i < n; i += step, step = 6 - step) {
+
+        if (isPrime->at(i / 3)) {
+
+            primes.push_back(i);
+
+            for (unsigned long j = i * i, subStep = step; j < n; j += subStep * i, subStep = 6 - subStep)
+                isPrime->at(j / 3) = false;
+        }
     }
 
-    return retVec;
+    return primes;
 }
